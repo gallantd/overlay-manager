@@ -1,0 +1,22 @@
+{
+  "name": "overlay-manager",
+  "version": "0.0.1",
+  "description": "Javascript object for injecting content over a page.",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/gallantd/overlay-manager"
+  },
+  "author": {
+    "name": "Dave Gallant",
+    "email": "dave.a.gallant@gmail.com",
+    "url": "http://davidgallant.info"
+  },
+  "license": "BSD",
+  "devDependencies": {
+    "grunt": "~0.4.2",
+    "grunt-contrib-jshint": "~0.6.4",
+    "grunt-contrib-uglify": "^0.6.0",
+    "grunt-contrib-watch": "~0.5.3",
+    "grunt-jsdoc": "^0.5.7"
+  }
+}
