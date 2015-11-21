@@ -4,60 +4,77 @@
 /**
  * Control the overlay for a page
  * @param {object} options {adfree, zones, promos}
- * @param {string} url     current page url.
+ * @param {string} adfree  true|false is current page adfree
  */
-var OverlayManager = function OverlayManager(options, url, adfree) {
+var OverlayManager = function OverlayManager(options, adfree) {
 
-	var noOptions = !url || !options || typeof options !== 'object';
+	var noOptions = !options || typeof options !== 'object';
 
+	//Quick stop if there are no options passed in
+	if (noOptions) {
+		this.logging('Data object has not been provided', 'error');
+		return false;
+	}
+
+
+
+	// Is current page adfree
 	this.adfree = adfree || false;
+
+	//Set objects needed through out
 	this.$window = $(window);
 	this.$body = $('body');
 
 
-	//Quick stop if there are no options passed in
-	if (noOptions) {
-		this.errorLog('Current URL | Data object has not been provided');
 
-		return false;
-	}
+ //   //default params for object
+	// this.defaults = {
+	// 	zones: null,
+	// 	cookieTime: 1,
+	// 	cookieValue: 'true',
+	// 	cookieName: 'LiveEvent',
+	// 	width: '100%',
+	// 	height: '100%',
+	// 	backgroundColor: '0,0,0',
+	// 	opacity: '0.8',
+	// 	onAdfree: false
+	// };
 
-   //default params for object
-	this.defaults = {
-		zones: null,
-		cookieTime: 1,
-		cookieValue: 'true',
-		cookieName: 'LiveEvent',
-		width: '100%',
-		height: '100%',
-		backgroundColor: '0,0,0',
-		opacity: '0.8',
-		onAdfree: false
-	};
+	// //Set current url value
+	// this.defaults.currentUrl = url;
 
-	//Set current url value
-	this.defaults.currentUrl = url;
-
-	this.setDefaults(options);
+	// this.setDefaults(options);
+	console.log(this.defaults);
 };
+
+
+OverlayManager.prototype.defaults = {
+	cookieTime: 1,
+	width: '100%',
+	height: '100%',
+	backgroundColor: '0,0,0',
+	opacity: '0.8',
+	onAdfree: false
+};
+
 
 /**
  * ID for the overlay
  * @type {String}
  */
-OverlayManager.prototype.OVERLAY_ID = 'OverlayModal';
+//OverlayManager.prototype.OVERLAY_ID = 'OverlayModal';
 
 /**
  * ID for the overlay frame
  * @type {String}
  */
-OverlayManager.prototype.FRAME_ID = 'OverlayFrame';
+//OverlayManager.prototype.FRAME_ID = 'OverlayFrame';
 
 /**
  * Set options for the overlay
  * @param {object} options [contains all the zone information]
  */
-OverlayManager.prototype.setDefaults = function setDefaults(options) {
+/*OverlayManager.prototype.setDefaults = function setDefaults(options) {
 	if (!options[0] || !options[0].promos) {
 		this.errorLog('data zones not provided.');
 		this.errorLog('expected obj[0].promos');
@@ -69,19 +86,19 @@ OverlayManager.prototype.setDefaults = function setDefaults(options) {
 	if (this.options) {
 		this.overlayCheck();
 	}
-};
+};*/
 
 
-OverlayManager.prototype.adFreeCheck = function adFreeCheck() {
+/*OverlayManager.prototype.adFreeCheck = function adFreeCheck() {
 	if (!this.adfree || 'true' === this.promo.parameters.onAdfree) {
 		this.setSize();
 	}
-};
+};*/
 
 /**
  * Check includes and excludes to see if the overlay should live on the page
  */
-OverlayManager.prototype.overlayCheck = function overlayCheck() {
+/*OverlayManager.prototype.overlayCheck = function overlayCheck() {
 	var i,
 		x,
 		includes,
@@ -126,14 +143,14 @@ OverlayManager.prototype.overlayCheck = function overlayCheck() {
 		this.promo = this.options[0].promos[matchMaker];
 		this.adFreeCheck();
 	}
-};
+};*/
 
 /**
  * check to see if the overlay is blocked on this page.
  * @param  {string} excludes [url]
  * @return {boolean}
  */
-OverlayManager.prototype.checkExcludes = function checkExcludes(excludes) {
+/*OverlayManager.prototype.checkExcludes = function checkExcludes(excludes) {
 	var x,
 		excludeLength = excludes.length,
 		url = this.options.currentUrl,
@@ -149,14 +166,14 @@ OverlayManager.prototype.checkExcludes = function checkExcludes(excludes) {
 	}
 
 	return include;
-};
+};*/
 
 /**
  * check to see if the overlay is to appear on this page.
  * @param  {string} includes [url]
  * @return {boolean}
  */
-OverlayManager.prototype.checkIncludes = function checkIncludes(includes) {
+/*OverlayManager.prototype.checkIncludes = function checkIncludes(includes) {
 	var x,
 		url = this.options.currentUrl,
 		includeMatch = false,
@@ -172,12 +189,12 @@ OverlayManager.prototype.checkIncludes = function checkIncludes(includes) {
 	}
 
 	return includeMatch;
-};
+};*/
 
 /**
  * set the size of the frame.
  */
-OverlayManager.prototype.setSize = function setSize() {
+/*OverlayManager.prototype.setSize = function setSize() {
 	var units,
 		_height,
 		_width,
@@ -198,35 +215,36 @@ OverlayManager.prototype.setSize = function setSize() {
 		this.buildPromo();
 	}
 
-};
+};*/
 
 /**
  * build the promo and check if a cookie is needed.
  */
-OverlayManager.prototype.buildPromo = function buildPromo() {
+/*OverlayManager.prototype.buildPromo = function buildPromo() {
 	if ('true' === this.promo.parameters.deferCookie) {
-		console.log('defer cookie');
 		this.createMask();
+		//Set the cookie for master switch version
+		this.setCookie();
 	} else {
 		this.cookieStatus();
 	}
-};
+};*/
 
 /**
  * checks to see if there currently is a cookie set.
  * if there is not set the cookie.
  */
-OverlayManager.prototype.cookieStatus = function cookieStatus() {
+/*OverlayManager.prototype.cookieStatus = function cookieStatus() {
 	if (!this.checkCookie()) {
 		this.setCookie();
 	}
-};
+};*/
 
 /**
  * check to see the status of the current cookie
  * @return {boolean}
  */
-OverlayManager.prototype.checkCookie = function checkCookie() {
+/*OverlayManager.prototype.checkCookie = function checkCookie() {
 	var x,
 		current = document.cookie.split(';'),
 		count = current.length;
@@ -240,13 +258,13 @@ OverlayManager.prototype.checkCookie = function checkCookie() {
 	}
 
 	return false;
-};
+};*/
 
 
 /**
  * set a cookie when needed
  */
-OverlayManager.prototype.setCookie = function setCookie() {
+/*OverlayManager.prototype.setCookie = function setCookie() {
 	var promo = this.promo.parameters,
 		expires,
 		cookie,
@@ -262,12 +280,12 @@ OverlayManager.prototype.setCookie = function setCookie() {
 	if (document.cookie = cookie) {
 		this.createMask();
 	}
-};
+};*/
 
 /**
  * Create the overlay container for the iframe, upon success will fire createFrame
  */
-OverlayManager.prototype.createMask = function createMask() {
+/*OverlayManager.prototype.createMask = function createMask() {
 	//Setup the mask
 	var mask = document.createElement('div');
 	mask.id = this.OVERLAY_ID;
@@ -285,12 +303,12 @@ OverlayManager.prototype.createMask = function createMask() {
 	if (this.setupListeners() && this.$body.append(mask)) {
 		this.createFrame();
 	}
-};
+};*/
 
 /**
  * Create frame container for overlay, if frame is successfully created setup listeners
  */
-OverlayManager.prototype.createFrame = function createFrame() {
+/*OverlayManager.prototype.createFrame = function createFrame() {
 	var frame = this.frame.image ? document.createElement('img') : document.createElement('iframe'),
 		size = this.frame;
 
@@ -317,12 +335,12 @@ OverlayManager.prototype.createFrame = function createFrame() {
 	}
 
 	this.$body.find('#' + this.OVERLAY_ID).append(frame);
-};
+};*/
 
 /**
  * setup listners for closing overlay
  */
-OverlayManager.prototype.setupListeners = function setupListeners() {
+/*OverlayManager.prototype.setupListeners = function setupListeners() {
 	var success = true;
 
 	if (this.$body.hasClass('activeOverlay')) {
@@ -333,23 +351,31 @@ OverlayManager.prototype.setupListeners = function setupListeners() {
 	this.$window.bind('overlay.kill', $.proxy(this.remove, this));
 
 	return success;
- };
+ };*/
 
 /**
  * remove listeners and overlay
  */
-OverlayManager.prototype.remove = function remove() {
+/*OverlayManager.prototype.remove = function remove() {
 	if (!this.$body.hasClass('activeOverlay')) {
 		return;
 	}
 
 	this.$body.toggleClass('activeOverlay', false).find('#' + this.OVERLAY_ID).remove();
 	this.$window.unbind('overlay.kill');
-};
+};*/
 
 /**
- * log errors to console
+ * log messages to console
  */
-OverlayManager.prototype.errorLog = function errorLog(message) {
-	console.error('OverlayManager -> ' + message);
+OverlayManager.prototype.logging = function logging(message, type) {
+	if (!console || !message) { return false; }
+
+	if (type === 'error'){
+		console.error('OverlayManager -> ' + message);
+	} else if (type === 'warn') {
+		console.warn('OverlayManager -> ' + message);
+	} else {
+		console.log('OverlayManager -> ' + message);
+	}
 };
