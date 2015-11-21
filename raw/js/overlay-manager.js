@@ -6,17 +6,14 @@
  * @param {object} options {adfree, zones, promos}
  * @param {string} adfree  true|false is current page adfree
  */
-var OverlayManager = function OverlayManager(options, adfree) {
-
-	var noOptions = !options || typeof options !== 'object';
-
+var OverlayManager = function OverlayManager(overlayObj, adfree) {
 	//Quick stop if there are no options passed in
-	if (noOptions) {
+	if (!overlayObj || typeof overlayObj !== 'object') {
 		this.logging('Data object has not been provided', 'error');
 		return false;
 	}
 
-
+	this.zones = overlayObj;
 
 	// Is current page adfree
 	this.adfree = adfree || false;
@@ -24,51 +21,41 @@ var OverlayManager = function OverlayManager(options, adfree) {
 	//Set objects needed through out
 	this.$window = $(window);
 	this.$body = $('body');
-
-
-
- //   //default params for object
-	// this.defaults = {
-	// 	zones: null,
-	// 	cookieTime: 1,
-	// 	cookieValue: 'true',
-	// 	cookieName: 'LiveEvent',
-	// 	width: '100%',
-	// 	height: '100%',
-	// 	backgroundColor: '0,0,0',
-	// 	opacity: '0.8',
-	// 	onAdfree: false
-	// };
-
-	// //Set current url value
-	// this.defaults.currentUrl = url;
-
+	console.log(this.zones);
 	// this.setDefaults(options);
-	console.log(this.defaults);
 };
-
-
-OverlayManager.prototype.defaults = {
-	cookieTime: 1,
-	width: '100%',
-	height: '100%',
-	backgroundColor: '0,0,0',
-	opacity: '0.8',
-	onAdfree: false
-};
-
-
-/**
- * ID for the overlay
- * @type {String}
- */
-//OverlayManager.prototype.OVERLAY_ID = 'OverlayModal';
 
 /**
  * ID for the overlay frame
  * @type {String}
  */
-//OverlayManager.prototype.FRAME_ID = 'OverlayFrame';
+OverlayManager.prototype.FRAME_ID = 'OverlayFrame';
+
+/**
+ * ID for the overlay
+ * @type {String}
+ */
+OverlayManager.prototype.OVERLAY_ID = 'OverlayModal';
+
+/**
+ * defaults for overlay
+ * @type {Object}
+ */
+OverlayManager.prototype.defaults = {
+	cookieTime: 1,
+	cookieValue: 'true',
+	cookieName: 'OverlayCookie',
+	width: '100%',
+	height: '100%',
+	backgroundColor: '0,0,0',
+	opacity: '0.8',
+	onAdfree: false,
+	currentUrl: window.location.href
+};
+
+
+
+
 
 /**
  * Set options for the overlay
