@@ -15,10 +15,20 @@
 				promos: [{
 					customIncludeUrl: "http://www.google.ca",
 					parameters: {
+						includes: "^http://localhost:8888/overlay-manager/test/",
+						height: "100%",
+						width: "100%"
+					}
+				}
+				,{
+					customIncludeUrl: "http://www.facebook.com",
+					parameters: {
 						height: "100%",
 						width: "100%",
+						//excludes: "^http://localhost:8888/overlay-manager/test/"
 					}
-				}]
+				}
+				]
 			}];
 
 			var om = new OverlayManager(data);

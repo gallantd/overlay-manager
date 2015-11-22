@@ -13,7 +13,7 @@ var OverlayManager = function OverlayManager(overlayObj, adfree) {
 		return false;
 	}
 
-	this.zones = overlayObj;
+	this.zones = overlayObj[0].promos;
 
 	// Is current page adfree
 	this.adfree = adfree || false;
@@ -21,7 +21,23 @@ var OverlayManager = function OverlayManager(overlayObj, adfree) {
 	//Set objects needed through out
 	this.$window = $(window);
 	this.$body = $('body');
-	console.log(this.zones);
+
+	//find an overlay that fits.
+	this.overlayCheck();
+
+
+	//check includes / excludes
+	//
+	//check ad free
+	//
+	//check cookie
+	//
+	//set defaults and settings
+	//
+	//build frame
+	//
+	//load contents
+	//
 	// this.setDefaults(options);
 };
 
@@ -54,6 +70,183 @@ OverlayManager.prototype.defaults = {
 };
 
 
+/**
+ * Check includes and excludes to see if the overlay should live on the page
+ */
+OverlayManager.prototype.overlayCheck = function overlayCheck() {
+	var i,
+		x,
+		includes,
+		inlcudeLength,
+		excludes,
+		excludeLength,
+		matchMaker,
+		include,
+		includeMatch,
+		other,
+		promos = this.zones,
+		count = promos.length;
+
+
+
+
+
+
+	for (i = 0; i < count; i++) {
+
+		if (promos[i].parameters && promos[i].parameters.excludesx) {
+
+/*NOTE
+	if include match it should ONLY appear on that one page.
+
+	if exclued match it should not appear on that page
+
+	default is appear everwhere.
+*/
+
+
+		// 	include = this.checkExcludes(promos[i].parameters.excludes.split(','));
+
+		// 	if (include) {
+		// 		matchMaker = i;
+		// 	}
+
+		}
+
+
+		//include = true;
+		this.logging(i);
+		// if (promos[i].parameters && promos[i].parameters.includes) {
+		// 	//early escape if url is matched in includes
+		// 	//promos[i].parameters.includes.split(',')
+		// 	if (this.matchCheck()) {
+		// 		// this.logging('match');
+		// 		// matchMaker = i;
+		// 		// break;
+		// 	}
+		// }
+
+		// if (promos[i].parameters && promos[i].parameters.excludes && !includeMatch) {
+		// 	include = this.checkExcludes(promos[i].parameters.excludes.split(','));
+
+		// 	if (include) {
+		// 		matchMaker = i;
+		// 	}
+
+		// } else {
+		// 	matchMaker = i;
+		// }
+	}
+
+	//matchMaker = 0;
+
+	// if (matchMaker === undefined) {
+	// 	matchMaker = 9;
+	// }
+
+	matchMaker = matchMaker !== undefined? matchMaker : 0;
+
+	//this.logging(matchMaker, 'warn');
+	//this.logging(promos[matchMaker]);
+
+
+	// if (include) {
+	// 	this.promo = this.options[0].promos[matchMaker];
+	// 	this.adFreeCheck();
+	// }
+	//
+};
+
+OverlayManager.prototype.matchCheck = function matchCheck(value) {
+	this.logging('<<<=====');
+	this.logging(value);
+	/*NOTE
+	include and exclude check should be
+	merged into this one function that returns
+	true | false based on match of the params.
+
+
+	*/
+	// var x,
+	// 	url = this.options.currentUrl,
+	// 	includeMatch = false,
+	// 	includeLength = includes.length;
+
+	// for (x = 0; x < includeLength; x++) {
+
+	// 	if (url.match(includes[x])) {
+	// 		includeMatch = true;
+	// 		break;
+	// 	}
+
+	// }
+
+	// return includeMatch;
+};
+/**
+ * check to see if the overlay is blocked on this page.
+ * @param  {string} excludes [url]
+ * @return {boolean}
+ */
+/*OverlayManager.prototype.checkExcludes = function checkExcludes(excludes) {
+	var x,
+		url = this.defaults.currentUrl,
+		include = true;
+		excludeLength = excludes.length,
+
+	for (x = 0; x < excludeLength; x++) {
+
+		if (!!url.match(excludes[x])) {
+			include = false;
+			break;
+		}
+
+	}
+
+	return include;
+};*/
+
+/**
+ * check to see if the overlay is to appear on this page.
+ * @param  {string} includes [url]
+ * @return {boolean}
+ */
+/*OverlayManager.prototype.checkIncludes = function checkIncludes(includes) {
+	var x,
+		url = this.options.currentUrl,
+		includeMatch = false,
+		includeLength = includes.length;
+
+	for (x = 0; x < includeLength; x++) {
+
+		if (url.match(includes[x])) {
+			includeMatch = true;
+			break;
+		}
+
+	}
+
+	return includeMatch;
+};*/
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -82,56 +275,36 @@ OverlayManager.prototype.defaults = {
 	}
 };*/
 
+
+
 /**
- * Check includes and excludes to see if the overlay should live on the page
+ * set the size of the frame.
  */
-/*OverlayManager.prototype.overlayCheck = function overlayCheck() {
-	var i,
-		x,
-		includes,
-		inlcudeLength,
-		excludes,
-		excludeLength,
-		matchMaker,
-		include,
-		includeMatch,
-		other,
-		promos = this.options[0].promos,
-		count = promos.length;
+/*OverlayManager.prototype.setSize = function setSize() {
+	var units,
+		_height,
+		_width,
+		width = this.promo.parameters.width || this.options.width,
+		height = this.promo.parameters.height || this.options.height;
 
-	for (i = 0; i < count; i++) {
-		include = true;
+	this.frame = {
+		width: parseInt(width, 10),
+		height: parseInt(height, 10),
+		units: width.replace(parseInt(width, 10), ''),
+		image: this.promo.parameters.imageOnly === 'true' ? true : false,
+		path: this.promo.customIncludeUrl ? this.promo.customIncludeUrl : null,
+		link: this.promo.parameters.imageLink ? this.promo.parameters.imageLink : null
+	};
 
-		if (promos[i].parameters && promos[i].parameters.includes) {
-			includeMatch = this.checkIncludes(promos[i].parameters.includes.split(','));
-
-			//early escape if url is matched in includes
-			if (includeMatch) {
-				matchMaker = i;
-				break;
-			}
-		} else {
-			matchMaker = i;
-		}
-
-		if (promos[i].parameters && promos[i].parameters.excludes && !includeMatch) {
-			include = this.checkExcludes(promos[i].parameters.excludes.split(','));
-
-			if (include) {
-				matchMaker = i;
-			}
-
-		} else {
-			matchMaker = i;
-		}
+	//If there is no path then we do not need to add the overlay
+	if (this.frame.path) {
+		this.buildPromo();
 	}
 
-	if (include) {
-		this.promo = this.options[0].promos[matchMaker];
-		this.adFreeCheck();
-	}
 };*/
 
+/**
+ * bu
 /**
  * check to see if the overlay is blocked on this page.
  * @param  {string} excludes [url]
@@ -177,36 +350,8 @@ OverlayManager.prototype.defaults = {
 
 	return includeMatch;
 };*/
+//ild the promo and check if a cookie is needed.
 
-/**
- * set the size of the frame.
- */
-/*OverlayManager.prototype.setSize = function setSize() {
-	var units,
-		_height,
-		_width,
-		width = this.promo.parameters.width || this.options.width,
-		height = this.promo.parameters.height || this.options.height;
-
-	this.frame = {
-		width: parseInt(width, 10),
-		height: parseInt(height, 10),
-		units: width.replace(parseInt(width, 10), ''),
-		image: this.promo.parameters.imageOnly === 'true' ? true : false,
-		path: this.promo.customIncludeUrl ? this.promo.customIncludeUrl : null,
-		link: this.promo.parameters.imageLink ? this.promo.parameters.imageLink : null
-	};
-
-	//If there is no path then we do not need to add the overlay
-	if (this.frame.path) {
-		this.buildPromo();
-	}
-
-};*/
-
-/**
- * build the promo and check if a cookie is needed.
- */
 /*OverlayManager.prototype.buildPromo = function buildPromo() {
 	if ('true' === this.promo.parameters.deferCookie) {
 		this.createMask();
@@ -356,13 +501,23 @@ OverlayManager.prototype.defaults = {
  * log messages to console
  */
 OverlayManager.prototype.logging = function logging(message, type) {
-	if (!console || !message) { return false; }
+	if (!console) { return false; }
 
-	if (type === 'error'){
-		console.error('OverlayManager -> ' + message);
-	} else if (type === 'warn') {
-		console.warn('OverlayManager -> ' + message);
+	if (typeof message !== 'object') {
+		if (type === 'error'){
+			console.error('OverlayManager -> ' + message);
+		} else if (type === 'warn') {
+			console.warn('OverlayManager -> ' + message);
+		} else {
+			console.log('OverlayManager -> ' + message);
+		}
 	} else {
-		console.log('OverlayManager -> ' + message);
+		if (type === 'error') {
+			console.error('OverlayManager Obj-> ', message);
+		} else if (type === 'warn') {
+			console.warn('OverlayManager Obj-> ', message);
+		 } else {
+			console.log('OverlayManager Obj-> ', message);
+		}
 	}
 };
