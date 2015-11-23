@@ -15,17 +15,22 @@
 				promos: [{
 					customIncludeUrl: "http://www.google.ca",
 					parameters: {
-						includes: "^http://localhost:8888/overlay-manager/test/",
-						height: "100%",
-						width: "100%"
+						includes: "^http://localhost:8888/overlay-manager/test/,^http://www.test.com",
+						height: "100px",
+						width: "100px",
+						excludes: "^http://www.nick.com/overlay-manager/test/"
+
 					}
+				},
+				{
+					customIncludeUrl: "http://www.twitter.com"
 				}
 				,{
 					customIncludeUrl: "http://www.facebook.com",
 					parameters: {
 						height: "100%",
 						width: "100%",
-						//excludes: "^http://localhost:8888/overlay-manager/test/"
+						excludes: "^http://localhost:8888/overlay-manager/test/"
 					}
 				}
 				]

@@ -22,23 +22,7 @@ var OverlayManager = function OverlayManager(overlayObj, adfree) {
 	this.$window = $(window);
 	this.$body = $('body');
 
-	//find an overlay that fits.
-	this.overlayCheck();
-
-
-	//check includes / excludes
-	//
-	//check ad free
-	//
-	//check cookie
-	//
-	//set defaults and settings
-	//
-	//build frame
-	//
-	//load contents
-	//
-	// this.setDefaults(options);
+	this.batting();
 };
 
 /**
@@ -52,6 +36,32 @@ OverlayManager.prototype.FRAME_ID = 'OverlayFrame';
  * @type {String}
  */
 OverlayManager.prototype.OVERLAY_ID = 'OverlayModal';
+
+OverlayManager.prototype.batting = function batting(){
+	//find an overlay that fits.
+	var iMatch = this.overlayCheck();
+
+	if (typeof iMatch !== 'object') {
+		this.logging('no match provided', 'yarn');
+		return false;
+	}
+
+	this.setOptions(iMatch);
+
+	//check ad free
+	//
+	//check browser
+	//
+	//check cookie
+	//
+	//build frame
+	//
+	//load contents
+
+
+	this.setupListeners();
+
+};
 
 /**
  * defaults for overlay
@@ -74,199 +84,102 @@ OverlayManager.prototype.defaults = {
  * Check includes and excludes to see if the overlay should live on the page
  */
 OverlayManager.prototype.overlayCheck = function overlayCheck() {
-	var i,
-		x,
-		includes,
-		inlcudeLength,
-		excludes,
-		excludeLength,
-		matchMaker,
-		include,
-		includeMatch,
-		other,
-		promos = this.zones,
-		count = promos.length;
-
-
-
-
-
+	var i, iMatch;
+	var promos = this.zones;
+	var count = promos.length;
 
 	for (i = 0; i < count; i++) {
-
-		if (promos[i].parameters && promos[i].parameters.excludesx) {
-
-/*NOTE
-	if include match it should ONLY appear on that one page.
-
-	if exclued match it should not appear on that page
-
-	default is appear everwhere.
-*/
-
-
-		// 	include = this.checkExcludes(promos[i].parameters.excludes.split(','));
-
-		// 	if (include) {
-		// 		matchMaker = i;
-		// 	}
-
+		// Early escape when no parameters are set.
+		if (!promos[i].parameters) {
+			iMatch = i;
+			continue;
 		}
 
+		if(promos[i].parameters.includes) {
+			// If include match we need not process any other.
+			if (this.matchCheck(promos[i].parameters.includes.split(','))) {
+				iMatch = i;
+				break;
+			}
+			continue;
+		}
 
-		//include = true;
-		this.logging(i);
-		// if (promos[i].parameters && promos[i].parameters.includes) {
-		// 	//early escape if url is matched in includes
-		// 	//promos[i].parameters.includes.split(',')
-		// 	if (this.matchCheck()) {
-		// 		// this.logging('match');
-		// 		// matchMaker = i;
-		// 		// break;
-		// 	}
-		// }
+		if(promos[i].parameters.excludes) {
+			// If excludes match we need to break out of this check.
+			if (this.matchCheck(promos[i].parameters.excludes.split(','))) {
+				continue;
+			}
+		}
 
-		// if (promos[i].parameters && promos[i].parameters.excludes && !includeMatch) {
-		// 	include = this.checkExcludes(promos[i].parameters.excludes.split(','));
-
-		// 	if (include) {
-		// 		matchMaker = i;
-		// 	}
-
-		// } else {
-		// 	matchMaker = i;
-		// }
+		iMatch = i;
 	}
 
-	//matchMaker = 0;
-
-	// if (matchMaker === undefined) {
-	// 	matchMaker = 9;
-	// }
-
-	matchMaker = matchMaker !== undefined? matchMaker : 0;
-
-	//this.logging(matchMaker, 'warn');
-	//this.logging(promos[matchMaker]);
-
-
-	// if (include) {
-	// 	this.promo = this.options[0].promos[matchMaker];
-	// 	this.adFreeCheck();
-	// }
-	//
+	if (iMatch !== undefined) {
+		this.logging('Matching page overlay');
+		return promos[iMatch];
+	}
+	return false;
 };
 
 OverlayManager.prototype.matchCheck = function matchCheck(value) {
-	this.logging('<<<=====');
-	this.logging(value);
-	/*NOTE
-	include and exclude check should be
-	merged into this one function that returns
-	true | false based on match of the params.
+	var i, valueLength, url;
+	if (!value) {
+		return false;
+	}
 
+	valueLength = value.length;
+	url = this.defaults.currentUrl;
 
-	*/
-	// var x,
-	// 	url = this.options.currentUrl,
-	// 	includeMatch = false,
-	// 	includeLength = includes.length;
+	for (i = 0; i < valueLength; i++) {
+		if (url.match(value[i])) {
+			return true;
+		}
+	}
 
-	// for (x = 0; x < includeLength; x++) {
-
-	// 	if (url.match(includes[x])) {
-	// 		includeMatch = true;
-	// 		break;
-	// 	}
-
-	// }
-
-	// return includeMatch;
+	return false;
 };
-/**
- * check to see if the overlay is blocked on this page.
- * @param  {string} excludes [url]
- * @return {boolean}
- */
-/*OverlayManager.prototype.checkExcludes = function checkExcludes(excludes) {
-	var x,
-		url = this.defaults.currentUrl,
-		include = true;
-		excludeLength = excludes.length,
-
-	for (x = 0; x < excludeLength; x++) {
-
-		if (!!url.match(excludes[x])) {
-			include = false;
-			break;
-		}
-
-	}
-
-	return include;
-};*/
-
-/**
- * check to see if the overlay is to appear on this page.
- * @param  {string} includes [url]
- * @return {boolean}
- */
-/*OverlayManager.prototype.checkIncludes = function checkIncludes(includes) {
-	var x,
-		url = this.options.currentUrl,
-		includeMatch = false,
-		includeLength = includes.length;
-
-	for (x = 0; x < includeLength; x++) {
-
-		if (url.match(includes[x])) {
-			includeMatch = true;
-			break;
-		}
-
-	}
-
-	return includeMatch;
-};*/
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 /**
  * Set options for the overlay
  * @param {object} options [contains all the zone information]
  */
-/*OverlayManager.prototype.setDefaults = function setDefaults(options) {
-	if (!options[0] || !options[0].promos) {
-		this.errorLog('data zones not provided.');
-		this.errorLog('expected obj[0].promos');
+OverlayManager.prototype.setOptions = function setOptions(data) {
+	this.logging(data);
+	if (!data) {
+		this.logging('No data options provided', 'error');
+		return false;
+	}
 
-		return;
-	}
-	this.options = $.extend(this.options, this.defaults, options);
-	//After all options are set check zones for promos and check for overlay
-	if (this.options) {
-		this.overlayCheck();
-	}
-};*/
+	this.options = $.extend(this.options, this.defaults, data.parameters);
+	this.options.customIncludeUrl = data.customIncludeUrl;
+};
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 /*OverlayManager.prototype.adFreeCheck = function adFreeCheck() {
@@ -302,55 +215,6 @@ OverlayManager.prototype.matchCheck = function matchCheck(value) {
 	}
 
 };*/
-
-/**
- * bu
-/**
- * check to see if the overlay is blocked on this page.
- * @param  {string} excludes [url]
- * @return {boolean}
- */
-/*OverlayManager.prototype.checkExcludes = function checkExcludes(excludes) {
-	var x,
-		excludeLength = excludes.length,
-		url = this.options.currentUrl,
-		include = true;
-
-	for (x = 0; x < excludeLength; x++) {
-
-		if (!!url.match(excludes[x])) {
-			include = false;
-			break;
-		}
-
-	}
-
-	return include;
-};*/
-
-/**
- * check to see if the overlay is to appear on this page.
- * @param  {string} includes [url]
- * @return {boolean}
- */
-/*OverlayManager.prototype.checkIncludes = function checkIncludes(includes) {
-	var x,
-		url = this.options.currentUrl,
-		includeMatch = false,
-		includeLength = includes.length;
-
-	for (x = 0; x < includeLength; x++) {
-
-		if (url.match(includes[x])) {
-			includeMatch = true;
-			break;
-		}
-
-	}
-
-	return includeMatch;
-};*/
-//ild the promo and check if a cookie is needed.
 
 /*OverlayManager.prototype.buildPromo = function buildPromo() {
 	if ('true' === this.promo.parameters.deferCookie) {
@@ -469,10 +333,20 @@ OverlayManager.prototype.matchCheck = function matchCheck(value) {
 	this.$body.find('#' + this.OVERLAY_ID).append(frame);
 };*/
 
+
+
+
+
+
+
+
+
+
+
 /**
  * setup listners for closing overlay
  */
-/*OverlayManager.prototype.setupListeners = function setupListeners() {
+OverlayManager.prototype.setupListeners = function setupListeners() {
 	var success = true;
 
 	if (this.$body.hasClass('activeOverlay')) {
@@ -483,19 +357,19 @@ OverlayManager.prototype.matchCheck = function matchCheck(value) {
 	this.$window.bind('overlay.kill', $.proxy(this.remove, this));
 
 	return success;
- };*/
+ };
 
 /**
  * remove listeners and overlay
  */
-/*OverlayManager.prototype.remove = function remove() {
+OverlayManager.prototype.remove = function remove() {
 	if (!this.$body.hasClass('activeOverlay')) {
 		return;
 	}
 
 	this.$body.toggleClass('activeOverlay', false).find('#' + this.OVERLAY_ID).remove();
 	this.$window.unbind('overlay.kill');
-};*/
+};
 
 /**
  * log messages to console
