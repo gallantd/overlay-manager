@@ -18,8 +18,11 @@
 						includes: "^http://localhost:8888/overlay-manager/test/,^http://www.test.com",
 						height: "100px",
 						width: "100px",
+						onAdfree: true,
+						deferCookie: true,
+						backgroundColor: "255,0,0",
+						opacity: 0.5,
 						excludes: "^http://www.nick.com/overlay-manager/test/"
-
 					}
 				},
 				{
@@ -36,7 +39,7 @@
 				]
 			}];
 
-			var om = new OverlayManager(data);
+			var om = new OverlayManager(data, true);
 	</script>
 </body>
 </html>
