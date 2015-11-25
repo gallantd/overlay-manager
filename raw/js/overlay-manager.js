@@ -37,8 +37,10 @@ OverlayManager.prototype.FRAME_ID = 'OverlayFrame';
  */
 OverlayManager.prototype.OVERLAY_ID = 'OverlayModal';
 
+/**
+ * all function calls needed for overlay
+ */
 OverlayManager.prototype.batting = function batting(){
-	//find an overlay that fits.
 	var iShow;
 	var iMatch = this.overlayCheck();
 	if (typeof iMatch !== 'object') {
@@ -52,12 +54,7 @@ OverlayManager.prototype.batting = function batting(){
 		this.createMask();
 	}
 
-
 	this.setupListeners();
-
-
-	//check   => CHECK FOR BROWSER SIZE IN OVERLAY CHECK
-
 };
 
 /**
@@ -221,7 +218,6 @@ OverlayManager.prototype.setCookie = function setCookie() {
  * Create the overlay container for the iframe, upon success will fire createFrame
  */
 OverlayManager.prototype.createMask = function createMask() {
-	//Setup the mask
 	var mask = document.createElement('div');
 	mask.id = this.OVERLAY_ID;
 	mask.className = 'overlayMask';
@@ -232,126 +228,87 @@ OverlayManager.prototype.createMask = function createMask() {
 	mask.style.height = '100%';
 	mask.style.top = '0';
 	mask.style.left = '0';
+	mask.style.textAlign = 'center';
 	mask.style.zIndex = 2147483654;
 	//mask.style.display = 'none';
 
 	//Check the mask is created before adding the frame
 	if (this.$body.append(mask)) {
+		this.createClose();
 		this.createFrame();
 	}
 };
 
-OverlayManager.prototype.checkContents = function checkContents(){
-	//  check for image or html page
-	// Also need to set anchor before image.
-	return false;
+/**
+ * Create the close button to close the overlay container
+ */
+OverlayManager.prototype.createClose = function createClose() {
+	var close = {
+		'width':'35px',
+		'height':'35px',
+		'color':'white',
+		'background':'black',
+		'border-radius':'25px',
+		'text-decoration':'none',
+		'display': 'block',
+		'font': '30px/1 Arial',
+		'font-weight': 'Bold',
+		'position': 'absolute',
+		'right': '1%',
+		'top': '2%',
+		'zIndex': '99999'
+	};
+	this.$body.find('#' + this.OVERLAY_ID).append(
+		$('<a>').attr('href','#').text('x').css(close).on('click',$.proxy(this.remove, this))
+	);
+};
 
+/**
+ * Check provided url to see if it is an image
+ * @return {Boolean} [return true if image false if not]
+ */
+OverlayManager.prototype.checkContents = function checkContents(){
+	var iImage = this.options.customIncludeUrl.split('.');
+	iImage = iImage[iImage.length - 1].toLowerCase();
+
+	if (iImage === 'jpg' || iImage === 'png' || iImage === 'gif') {
+		return true;
+	}
+
+	return false;
 };
 
 /**
  * Create frame container for overlay, if frame is successfully created setup listeners
  */
 OverlayManager.prototype.createFrame = function createFrame() {
-	console.log(this.options);
+	var content = this.checkContents();
+	var frame = content? document.createElement('img') : document.createElement('iframe');
 
-	// var frame = {
-	// 	width: parseInt(this.options.width, 10),
-	// 	height: parseInt(this.options.height, 10),
-	// 	//units: width.replace(parseInt(this.options.width, 10), ''),
-	// 	//image: this.promo.parameters.imageOnly === 'true' ? true : false,
-	// 	path: this.options.customIncludeUrl
-	// };
-var frame = this.checkContents()? document.createElement('img') : document.createElement('iframe');
-	console.log(frame);
+	frame.id = this.FRAME_ID;
+	frame.style.width = this.options.width;
+	frame.style.height = this.options.height;
+	frame.style.backgroundColor = 'transparent';
+	frame.style.position = 'relative';
+	frame.style.border = 'none';
+	frame.style.zIndex = 10;
+	frame.style.verticalAlign = 'center';
+	frame.allowTransparency = 'true';
+	frame.frameBorder = 0;
+	frame.scrolling = 'no';
+	frame.src = this.options.customIncludeUrl;
+	frame.style.top = '50%';
+	frame.style.marginTop = '-' + parseInt(this.options.height, 10) / 2 + 'px';
 
-
-// 		size = this.frame;
-
-// 	frame.id = this.FRAME_ID;
-// 	frame.style.position = 'fixed';
-// 	frame.style.backgroundColor = 'transparent';
-// 	frame.style.border = 'none';
-// 	frame.style.width = size.width + size.units;
-// 	frame.style.height = size.height + size.units;
-// 	frame.style.zIndex = 10;
-// 	frame.allowTransparency = 'true';
-// 	frame.frameBorder = 0;
-// 	frame.scrolling = 'no';
-// 	frame.src = size.path;
-
-// 	if ('%' === size.units) {
-// 		frame.style.top = ((100 - size.height) / 2) + size.units;
-// 		frame.style.left = ((100 - size.width) / 2) + size.units;
-// 	} else {
-// 		frame.style.top = '50%';
-// 		frame.style.left = '50%';
-// 		frame.style.marginLeft = '-' + Math.floor(size.width / 2) + size.units;
-// 		frame.style.marginTop = '-' + Math.floor(size.height / 2) + size.units;
-// 	}
-
-// 	this.$body.find('#' + this.OVERLAY_ID).append(frame);
-//
-//
-// 	Will do the display block after the content is added to help with loading flash.
+	if (content && this.options.link) {
+		this.$body.find('#' + this.OVERLAY_ID).append(
+			$('<a>').attr('href',this.options.link)
+			.append(frame)
+			).show();
+	} else {
+		this.$body.find('#' + this.OVERLAY_ID).append(frame).show();
+	}
 };
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-/**
- * set the size of the frame.
- */
-// OverlayManager.prototype.setSize = function setSize() {
-// 	var units,
-// 		_height,
-// 		_width,
-// 		width = this.promo.parameters.width || this.options.width,
-// 		height = this.promo.parameters.height || this.options.height;
-
-// 	this.frame = {
-// 		width: parseInt(width, 10),
-// 		height: parseInt(height, 10),
-// 		units: width.replace(parseInt(width, 10), ''),
-// 		image: this.promo.parameters.imageOnly === 'true' ? true : false,
-// 		path: this.promo.customIncludeUrl ? this.promo.customIncludeUrl : null,
-// 		link: this.promo.parameters.imageLink ? this.promo.parameters.imageLink : null
-// 	};
-
-// 	//If there is no path then we do not need to add the overlay
-
-// };
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 /**
  * setup listners for closing overlay
