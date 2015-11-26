@@ -5,8 +5,8 @@
 	<script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.3/jquery.min.js"></script>
 	<script type="text/javascript" src="../libs/js/overlay-manager.min.js"></script>
 </head>
-<body class="roadblockRoot" style="margin:0;">
-	<iframe id="srcFrame" width="100%" src="http://davidgallant.info"></iframe>
+<body class="roadblockRoot" style="margin:0; width: 100%;">
+	<iframe id="srcFrame" width="100%" src="http://redspace.com" scrolling="yes"></iframe>
 	<script>
 		var srcFrame = document.getElementById('srcFrame');
 		srcFrame.style.height = window.innerHeight + 'px';
@@ -14,20 +14,22 @@
 		var data = [{
 				promos: [{
 					customIncludeUrl: "http://vignette3.wikia.nocookie.net/theflash/images/b/bc/The_Flash_Logo.jpg",
+					//customIncludeUrl: "http://davidgallant.info",
 					parameters: {
 						includes: "^http://localhost:8888/overlay-manager/test/,^http://www.test.com",
-						height: "200px",
-						width: "400px",
+						height: "100%",
+						width: "100%",
 						onAdfree: true,
 						deferCookie: true,
+						device: 'desktop,tablet',
 						link: 'http://www.facebook.com',
-						backgroundColor: "255,0,0",
+						backgroundColor: "10,255,0",
 						opacity: 0.5,
 						excludes: "^http://www.nick.com/overlay-manager/test/"
 					}
 				},
 				{
-					customIncludeUrl: "http://www.placeditigal.com"
+					customIncludeUrl: "http://www.davidgallant.info"
 				}
 				,{
 					customIncludeUrl: "http://www.facebook.com",
@@ -40,7 +42,7 @@
 				]
 			}];
 
-			var om = new OverlayManager(data, true);
+			var om = new OverlayManager(data, false);
 	</script>
 </body>
 </html>
