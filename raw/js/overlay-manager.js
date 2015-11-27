@@ -421,7 +421,7 @@ OverlayManager.prototype.remove = function remove() {
 };
 
 /**
- * [runLoop description]
+ * Check throug an array to find a match
  * @param  {array} contents [list of value to check against]
  * @param  {string} check   [string to match against]
  * @return {Boolea}         [true | false based on match]
