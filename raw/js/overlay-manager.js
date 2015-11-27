@@ -4,7 +4,7 @@
 /**
  * Control the overlay for a page
  * @param {object} options {adfree, zones, promos}
- * @param {string} adfree  true|false is current page adfree
+ * @param {string} [adfree  true|false is current page adfree]
  */
 var OverlayManager = function OverlayManager(overlayObj, adfree) {
 	//Quick stop if there are no options passed in
@@ -22,6 +22,7 @@ var OverlayManager = function OverlayManager(overlayObj, adfree) {
 	this.$window = $(window);
 	this.$body = $('body');
 
+	//The order of exicution
 	this.batting();
 };
 
@@ -38,8 +39,8 @@ OverlayManager.prototype.FRAME_ID = 'OverlayFrame';
 OverlayManager.prototype.OVERLAY_ID = 'OverlayModal';
 
 /**
- * [adFreeCheck description]
- * @return {[type]} [description]
+ * Check if overlay should be on current page
+ * @return {boolean} [true appear | false  block]
  */
 OverlayManager.prototype.adFreeCheck = function adFreeCheck() {
 	if (!this.adfree || this.adfree === this.options.onAdfree){
@@ -49,24 +50,30 @@ OverlayManager.prototype.adFreeCheck = function adFreeCheck() {
 };
 
 /**
- * all function calls needed for overlay
+ * All checkes needed for overlay
  */
 OverlayManager.prototype.batting = function batting(){
 	var iShow;
 	var iMatch = this.overlayCheck();
 
+	// Make sure we are working with an object
 	if (typeof iMatch !== 'object') {
 		this.logging('no match provided', 'yarn');
 		return false;
 	}
 
+	//Set options for current overlay.
 	this.setOptions(iMatch);
 
+	//Check for adfree and cookie
 	if (this.adFreeCheck() && this.cookieStatus()) {
+		//If all true create the overlays
 		this.createMask();
+
+		//Once the overlay is created set the listneres for closing
+		this.setupListeners();
 	}
 
-	this.setupListeners();
 };
 
 /**
@@ -86,7 +93,7 @@ OverlayManager.prototype.checkContents = function checkContents(){
 
 /**
  * check to see the status of the current cookie
- * @return {boolean}
+ * @return {boolean} [true cookie exist | false no cookie]
  */
 OverlayManager.prototype.checkCookie = function checkCookie(cookieMatch) {
 	if (!cookieMatch) {return false;}
@@ -104,16 +111,15 @@ OverlayManager.prototype.checkCookie = function checkCookie(cookieMatch) {
 };
 
 /**
- * [checkDevice description]
- * @param  {[type]} device [description]
- * @return {[type]}        [description]
+ * Check screen based on coookie | size
+ * @param  {Array} device [list of devices it should appear on]
+ * @return {Boolean}      [true appear | falas don't]
  */
 OverlayManager.prototype.checkDevice = function checkDevice(device) {
 	var i =0,
 	count = device.length;
-	//document.cookie = 'current_device=site-tablet.com;100000000;path=/';
 
-
+	//Run through the device list looking for a match
 	for (;i < count; i++) {
 		if (this.checkCookie(device[i])) {
 			this.logging('Device cookie match', 'warn');
@@ -124,18 +130,22 @@ OverlayManager.prototype.checkDevice = function checkDevice(device) {
 		}
 	}
 
+	// if not match return false to block the page
 	return false;
 };
 
 /**
- * Create frame container for overlay, if frame is successfully created setup listeners
+ * Create frame container for overlay
+ * Set either iframe | image (image can have anchor)
  */
 OverlayManager.prototype.createFrame = function createFrame() {
+	// check to see if frame is an image
 	var content = this.checkContents();
 	var height = parseInt(this.options.height, 10);
 	var units = this.options.height.replace(height, '');
 	var frame = content? document.createElement('img') : document.createElement('iframe');
 
+	//Setup the fram styles
 	frame.id = this.FRAME_ID;
 	frame.style.width = this.options.width;
 	frame.style.height = this.options.height;
@@ -149,6 +159,7 @@ OverlayManager.prototype.createFrame = function createFrame() {
 	frame.scrolling = 'no';
 	frame.src = this.options.customIncludeUrl;
 
+	//Center the frame on the page
 	if ('%' === units) {
 		frame.style.top = ((100 - height) / 2) + units;
 	} else {
@@ -156,6 +167,7 @@ OverlayManager.prototype.createFrame = function createFrame() {
 		frame.style.marginTop = '-' + Math.floor(height / 2) + units;
 	}
 
+	//if the contents are an image check for a link
 	if (content && this.options.link) {
 		this.$body.find('#' + this.OVERLAY_ID).append(
 			$('<a>').attr('href',this.options.link)
@@ -167,8 +179,7 @@ OverlayManager.prototype.createFrame = function createFrame() {
 };
 
 /**
- * checks to see if there currently is a cookie set.
- * if there is not set the cookie.
+ * Checks to defer cookie if not check the cookie
  */
 OverlayManager.prototype.cookieStatus = function cookieStatus() {
 	if (this.options.deferCookie) {
@@ -176,6 +187,7 @@ OverlayManager.prototype.cookieStatus = function cookieStatus() {
 		return true;
 	}
 
+	// Checck for cookie
 	if (!this.checkCookie(this.options.cookieName)) {
 		return this.setCookie();
 	} else {
@@ -209,7 +221,8 @@ OverlayManager.prototype.createClose = function createClose() {
 };
 
 /**
- * Create the overlay container for the iframe, upon success will fire createFrame
+ * Create the overlay container for the iframe | image
+ * upon success will fire createFrame and close
  */
 OverlayManager.prototype.createMask = function createMask() {
 	var mask = document.createElement('div');
@@ -224,7 +237,7 @@ OverlayManager.prototype.createMask = function createMask() {
 	mask.style.left = '0';
 	mask.style.textAlign = 'center';
 	mask.style.zIndex = 2147483654;
-	//mask.style.display = 'none';
+	mask.style.display = 'none';
 
 	//Check the mask is created before adding the frame
 	if (this.$body.append(mask)) {
@@ -251,8 +264,9 @@ OverlayManager.prototype.defaults = {
 };
 
 /**
- * [sizeDevice description]
- * @return {[type]} [description]
+ * Current device based on screen size
+ * @param  {string} current [current device]
+ * @return {Boolean}        [true | false based on device match]
  */
 OverlayManager.prototype.deviceSize = function deviceSize(current) {
 	var deviceMax , deviceMin;
@@ -286,7 +300,9 @@ OverlayManager.prototype.deviceSize = function deviceSize(current) {
 };
 
 /**
- * log messages to console
+ * Log to console
+ * @param  {string|object} message [what you want logged]
+ * @param  {string} type    [warn|error|(empty)]
  */
 OverlayManager.prototype.logging = function logging(message, type) {
 	if (!console) { return false; }
@@ -310,6 +326,11 @@ OverlayManager.prototype.logging = function logging(message, type) {
 	}
 };
 
+/**
+ * Check the curren url for a match in value
+ * @param  {array} value [array of urls]
+ * @return {Boolean}     [true | false based on match]
+ */
 OverlayManager.prototype.matchCheck = function matchCheck(value) {
 	var i, valueLength, url;
 	if (!value) {
@@ -319,6 +340,7 @@ OverlayManager.prototype.matchCheck = function matchCheck(value) {
 	valueLength = value.length;
 	url = this.defaults.currentUrl;
 
+	// Check values for a url match
 	for (i = 0; i < valueLength; i++) {
 		if (url.match(value[i])) {
 			return true;
@@ -329,7 +351,11 @@ OverlayManager.prototype.matchCheck = function matchCheck(value) {
 };
 
 /**
- * Check includes and excludes to see if the overlay should live on the page
+ * for each object passed in
+ * check for device
+ * check for include match
+ * check for exclude match
+ * @return {object|false} [return the best matching object]
  */
 OverlayManager.prototype.overlayCheck = function overlayCheck() {
 	var i, iMatch, zone;
@@ -342,12 +368,15 @@ OverlayManager.prototype.overlayCheck = function overlayCheck() {
 			iMatch = i;
 			continue;
 		}
+		//set zone to current promot pramas to be checked
 		zone = promos[i].parameters;
 
+		//Check device size
 		if (zone.device && !this.checkDevice(zone.device.split(','))) {
 			continue;
 		}
 
+		// Check includes
 		if (zone.includes) {
 			// If include match we need not process any other.
 			if (this.matchCheck(zone.includes.split(','))) {
@@ -357,6 +386,7 @@ OverlayManager.prototype.overlayCheck = function overlayCheck() {
 			continue;
 		}
 
+		// Check excludes
 		if (zone.excludes) {
 			// If excludes match we need to break out of this check.
 			if (this.matchCheck(zone.excludes.split(','))) {
@@ -367,10 +397,13 @@ OverlayManager.prototype.overlayCheck = function overlayCheck() {
 		iMatch = i;
 	}
 
+	// return match if there is one
 	if (iMatch !== undefined) {
 		this.logging('Matching page overlay', 'warn');
 		return promos[iMatch];
 	}
+
+	// No match found
 	return false;
 };
 
@@ -389,15 +422,11 @@ OverlayManager.prototype.remove = function remove() {
 
 /**
  * [runLoop description]
- * @param  {[type]} contents [description]
- * @param  {[type]} check    [description]
- * @return {[type]}          [description]
+ * @param  {array} contents [list of value to check against]
+ * @param  {string} check   [string to match against]
+ * @return {Boolea}         [true | false based on match]
  */
 OverlayManager.prototype.runLoop = function runLoop(contents, check) {
-	// Run through array and check for cookie value.
-	//
-	//
-	// take current size and checks includes.
 	contents.forEach(function(current){
 		if (check === current) {
 			return true;
@@ -408,7 +437,7 @@ OverlayManager.prototype.runLoop = function runLoop(contents, check) {
 };
 
 /**
- * set a cookie when needed
+ * Set a cookie when needed
  */
 OverlayManager.prototype.setCookie = function setCookie() {
 	var expires,
@@ -448,7 +477,7 @@ OverlayManager.prototype.setOptions = function setOptions(data) {
 };
 
 /**
- * setup listners for closing overlay
+ * Setup listners for closing overlay
  */
 OverlayManager.prototype.setupListeners = function setupListeners() {
 	var success = true;
