@@ -80,17 +80,6 @@ OverlayManager.prototype.batting = function batting(){
  * Check provided url to see if it is an image
  * @return {Boolean} [return true if image false if not]
  */
-// OverlayManager.prototype.checkContents = function checkContents(){
-// 	var iImage = this.options.customIncludeUrl.split('.');
-// 	iImage = iImage[iImage.length - 1].toLowerCase();
-
-// 	if (iImage === 'jpg' || iImage === 'png' || iImage === 'gif') {
-// 		return true;
-// 	}
-
-// 	return false;
-// };
-
 OverlayManager.prototype.checkContents = function checkContents() {
 	var iImage = this.options.customIncludeUrl;
 	return (iImage.match(/.(gif|jpg|png)$/) !== null);
