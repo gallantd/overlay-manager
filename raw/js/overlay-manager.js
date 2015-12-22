@@ -210,7 +210,7 @@ OverlayManager.prototype.createClose = function createClose() {
 		'zIndex': '99999'
 	};
 	this.$body.find('#' + this.OVERLAY_ID).append(
-		$('<a>').attr('href','#').text('x').css(close).on('click',$.proxy(this.remove, this))
+		$('<a>').attr('href','#').text('x').css(close).bind('click',$.proxy(this.relaunchToggle, this))
 	);
 };
 
@@ -233,11 +233,51 @@ OverlayManager.prototype.createMask = function createMask() {
 	mask.style.zIndex = 2147483654;
 	mask.style.display = 'none';
 
+
 	//Check the mask is created before adding the frame
 	if (this.$body.append(mask)) {
 		this.createClose();
 		this.createFrame();
+
+		//Setup relaunch options
+		if (this.options.relaunch) {
+			this.createRelaunch();
+		}
+
 	}
+};
+
+/**
+ * Create the createRelaunch button container for the iframe | image
+ */
+OverlayManager.prototype.createRelaunch = function createRelaunch() {
+	var relaunch = {
+		'width':'135px',
+		'padding':'10px 0',
+		'color':'white',
+		'border':'2px solid white',
+		'background':'black',
+		'border-radius':'5px',
+		'text-decoration':'none',
+		'display': 'none',
+		'font': '30px/1 Arial',
+		'font-weight': 'Bold',
+		'position': 'absolute',
+		'left': '1%',
+		'bottom': '2%',
+		'zIndex': '99999',
+		'text-align': 'center'
+	};
+
+	this.$body.append(
+		$('<a>').attr({
+			'id':'relaunchOverlay',
+			'href':'#'
+		}).addClass('relaunchOverlay').text('relaunch').css(relaunch).bind('click', $.proxy(this.relaunchToggle,this)));
+
+	//Set listener for relaunch
+	//this.$window.bind('overlay.relaunch', $.proxy(this.relaunchToggle,this));
+
 };
 
 /**
@@ -254,7 +294,8 @@ OverlayManager.prototype.defaults = {
 	opacity: '0.8',
 	onAdfree: false,
 	deferCookie: false,
-	currentUrl: window.location.href
+	currentUrl: window.location.href,
+	relaunch: false
 };
 
 /**
@@ -401,6 +442,24 @@ OverlayManager.prototype.overlayCheck = function overlayCheck() {
 	return false;
 };
 
+
+
+OverlayManager.prototype.relaunchToggle = function relaunchToggle() {
+	if (this.options.relaunch) {
+		this.relaunch();
+	} else {
+		this.remove();
+	}
+};
+
+OverlayManager.prototype.relaunch = function relaunch() {
+	if (!this.$body.hasClass('activeOverlay')) {
+		return;
+	}
+	this.$body.find('#relaunchOverlay').toggle();
+	this.$body.find('#' + this.OVERLAY_ID).toggle();
+};
+
 /**
  * remove listeners and overlay
  */
@@ -411,6 +470,8 @@ OverlayManager.prototype.remove = function remove() {
 
 	this.$body.toggleClass('activeOverlay', false).find('#' + this.OVERLAY_ID).remove();
 	this.$window.unbind('overlay.kill');
+	this.$window.unbind('overlay.relaunch');
+
 	this.logging('Closing overlay', 'warn');
 };
 
