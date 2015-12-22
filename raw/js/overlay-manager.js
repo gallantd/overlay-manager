@@ -236,7 +236,11 @@ OverlayManager.prototype.createMask = function createMask() {
 
 	//Check the mask is created before adding the frame
 	if (this.$body.append(mask)) {
-		this.createClose();
+
+		if (this.options.showClose) {
+			this.createClose();
+		}
+
 		this.createFrame();
 
 		//Setup relaunch options
@@ -274,10 +278,6 @@ OverlayManager.prototype.createRelaunch = function createRelaunch() {
 			'id':'relaunchOverlay',
 			'href':'#'
 		}).addClass('relaunchOverlay').text('relaunch').css(relaunch).bind('click', $.proxy(this.relaunchToggle,this)));
-
-	//Set listener for relaunch
-	//this.$window.bind('overlay.relaunch', $.proxy(this.relaunchToggle,this));
-
 };
 
 /**
@@ -294,6 +294,7 @@ OverlayManager.prototype.defaults = {
 	opacity: '0.8',
 	onAdfree: false,
 	deferCookie: false,
+	showClose: false,
 	currentUrl: window.location.href,
 	relaunch: false
 };
