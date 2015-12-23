@@ -1,6 +1,6 @@
 {
   "name": "overlay-manager",
-  "version": "0.0.1",
+  "version": "0.1.0",
   "description": "Javascript object for injecting content over a page.",
   "repository": {
     "type": "git",
