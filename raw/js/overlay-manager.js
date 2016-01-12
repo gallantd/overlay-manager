@@ -543,6 +543,7 @@ OverlayManager.prototype.setupListeners = function setupListeners() {
 	}
 
 	this.$body.toggleClass('activeOverlay', true);
+	this.$window.bind('overlay.relaunch', $.proxy(this.relaunch, this));
 	this.$window.bind('overlay.kill', $.proxy(this.remove, this));
 
 	return success;
