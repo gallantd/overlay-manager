@@ -5,14 +5,13 @@ OverlayManager is an object parser for determining the best fit for an overlay b
 # Usage
 Usage it is used by creating a new instance, and passing any configuration overrided required. 
 ```	
-	jQuery
 	var om = new OverlayManager(zones, adfree);
 ```
 	zone => {Object} containg the information to check against. 
 	adfree => {Boolean} if the current page is adfree. 
 
 # Required
- * **jQuery**: jQuery must be running on host site. version 1.7.2>=
+ * **jQuery**: jQuery must be running on host site. version 1.4.2>=
  * **zones**: This object contains all other required information & optional information.
  
 
@@ -31,16 +30,23 @@ Usage it is used by creating a new instance, and passing any configuration overr
  * **onAdfree** Should the ovelay appear on adfree pages
  * **width** Width of the overlay contents
  * **height** Height of the ovelray contents
+ * **showClose** Use the built in close button, default: false
+ * **currentUrl** Current URL of the page, default: window.location.href
+ * **relaunch** When closing use the relaunch button, default: false
 
 
 # Notes
-Includes are used when you want an overlay only on one page
-Excludes will block site or pages
-If no match is made overlay will appear
+Includes are used when you want an overlay only on one page all other pages will be excluded
+Excludes will block site or pages all others will be included
+If no match is made in includes or excludes overlay will appear
 
 # Dependencies
-OverlayManage requires user to have jQuery installed
+OverlayManage requires user to have jQuery installed version 1.4.2>=
 
 # CLOSING
 Fire this on the event you want to close the overlay with
-window.parent.$(window.parent).trigger('overlay.kill');
+	To close overlay use:
+		window.parent.$(window.parent).trigger('overlay.kill');
+	To toggle the overlay with a reopen button use: 
+		window.parent.$(window.parent).trigger('overlay.relaunch');
+
