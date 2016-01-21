@@ -34,7 +34,6 @@ Usage it is used by creating a new instance, and passing any configuration overr
  * **currentUrl** Current URL of the page, default: window.location.href
  * **relaunch** When closing use the relaunch button, default: false
 
-
 # Notes
 Includes are used when you want an overlay only on one page all other pages will be excluded
 Excludes will block site or pages all others will be included
